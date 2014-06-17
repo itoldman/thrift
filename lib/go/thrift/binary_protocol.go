@@ -75,6 +75,7 @@ func (p *TBinaryProtocolFactory) GetProtocol(t TTransport) TProtocol {
  */
 
 func (p *TBinaryProtocol) WriteMessageBegin(name string, typeId TMessageType, seqId int32) error {
+	fmt.Println("Binary protocol WriteMessageBegin")
 	if p.strictWrite {
 		version := uint32(VERSION_1) | uint32(typeId)
 		e := p.WriteI32(int32(version))

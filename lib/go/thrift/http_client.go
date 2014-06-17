@@ -21,6 +21,7 @@ package thrift
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -158,6 +159,7 @@ func (p *THttpClient) ReadByte() (c byte, err error) {
 }
 
 func (p *THttpClient) Write(buf []byte) (int, error) {
+	fmt.Printf("http client Write:%v\n", buf)
 	n, err := p.requestBuffer.Write(buf)
 	return n, err
 }
