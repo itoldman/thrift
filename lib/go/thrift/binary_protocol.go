@@ -47,6 +47,7 @@ func NewTBinaryProtocolTransport(t TTransport) *TBinaryProtocol {
 }
 
 func NewTBinaryProtocol(t TTransport, strictRead, strictWrite bool) *TBinaryProtocol {
+	fmt.Println("New Binary protocol")
 	p := &TBinaryProtocol{origTransport: t, strictRead: strictRead, strictWrite: strictWrite}
 	if et, ok := t.(TRichTransport); ok {
 		p.trans = et
