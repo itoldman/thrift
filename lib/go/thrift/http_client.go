@@ -22,18 +22,26 @@ package thrift
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	//"strings"
 )
 
 type THttpClient struct {
+	schema             string
+	host               string
+	port               int
 	response           *http.Response
+	body               *bytes.Buffer
 	url                *url.URL
 	requestBuffer      *bytes.Buffer
 	header             http.Header
 	nsecConnectTimeout int64
 	nsecReadTimeout    int64
+	SeqId              int32
 }
 
 type THttpClientTransportFactory struct {
@@ -88,6 +96,23 @@ func NewTHttpPostClient(urlstr string) (TTransport, error) {
 	}
 	buf := make([]byte, 0, 1024)
 	return &THttpClient{url: parsedURL, requestBuffer: bytes.NewBuffer(buf), header: http.Header{}}, nil
+}
+
+func NewTHttpRPCClient(schema string, host string, port int) (TTransport, error) {
+	buf := make([]byte, 0, 1024)
+	body := make([]byte, 0, 1024)
+
+	return &THttpClient{schema: schema, host: host, port: port, requestBuffer: bytes.NewBuffer(buf), body: bytes.NewBuffer(body), header: http.Header{}}, nil
+}
+
+func (p *THttpClient) SetUrl(path string) error {
+	urlstr := fmt.Sprint(p.schema, "://", p.host, ":", p.port, path)
+	parsedURL, err := url.Parse(urlstr)
+	if err != nil {
+		return err
+	}
+	p.url = parsedURL
+	return nil
 }
 
 // Set the HTTP Header for this specific Thrift Transport
@@ -147,11 +172,21 @@ func (p *THttpClient) Close() error {
 }
 
 func (p *THttpClient) Read(buf []byte) (int, error) {
+	fmt.Printf("http client read :%s\n", string(p.body.Bytes()))
 	if p.response == nil {
 		return 0, NewTTransportException(NOT_OPEN, "Response buffer is empty, no request.")
 	}
-	n, err := p.response.Body.Read(buf)
-	return n, NewTTransportExceptionFromError(err)
+	//buf = p.body
+	//buf = make([]byte, 0, 1024)
+	copy(buf, p.body.Bytes())
+	//p.body.Read(buf)
+	fmt.Printf("read to buf:%s\n", string(buf))
+	return len(buf), nil
+}
+
+func (p *THttpClient) ReadBody() ([]byte, error) {
+	body, err := ioutil.ReadAll(p.response.Body)
+	return body, err
 }
 
 func (p *THttpClient) ReadByte() (c byte, err error) {
@@ -173,14 +208,23 @@ func (p *THttpClient) WriteString(s string) (n int, err error) {
 }
 
 func (p *THttpClient) Flush() error {
+	fmt.Println("Http client flushing")
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", p.url.String(), p.requestBuffer)
+	//req, err := http.NewRequest("POST", "http://localhost:9090/config", strings.NewReader("client_id=gl"))
+
+	fmt.Printf("Http request is:%v\n", req)
 	if err != nil {
 		return NewTTransportExceptionFromError(err)
 	}
-	p.header.Add("Content-Type", "application/x-thrift")
+	//p.header.Add("Content-Type", "application/x-thrift")
+
+	p.header.Add("Content-Type", "application/x-www-form-urlencoded")
+
 	req.Header = p.header
+	fmt.Println("Do http request")
 	response, err := client.Do(req)
+	fmt.Printf("Http response is:%v\n", response)
 	if err != nil {
 		return NewTTransportExceptionFromError(err)
 	}
@@ -188,6 +232,16 @@ func (p *THttpClient) Flush() error {
 		// TODO(pomack) log bad response
 		return NewTTransportException(UNKNOWN_TRANSPORT_EXCEPTION, "HTTP Response code: "+strconv.Itoa(response.StatusCode))
 	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	fmt.Printf("Response body is:%s\n", string(body))
+
+	if err != nil {
+		fmt.Printf("Read Response body err:%v\n", err)
+
+		return err
+	}
+	p.body.Write(body)
 	p.response = response
 	return nil
 }
