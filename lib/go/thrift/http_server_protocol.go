@@ -73,7 +73,7 @@ func (p *THTTPServerProtocol) WriteMessageBegin(name string, typeId TMessageType
 }
 
 func (p *THTTPServerProtocol) WriteMessageEnd() error {
-	return p.Flush()
+	//return p.Flush()
 	return nil
 }
 
