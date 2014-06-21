@@ -1,0 +1,157 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Add	gen-go/rest/rest.go	/^func (p *RestClient) Add(num1 int32, num2 int32) (r int32, err error) {$/;"	d
+AddArgs	gen-go/rest/rest.go	/^type AddArgs struct {$/;"	d
+AddResult	gen-go/rest/rest.go	/^type AddResult struct {$/;"	d
+AddToProcessorMap	gen-go/rest/rest.go	/^func (p *RestProcessor) AddToProcessorMap(key string, processor thrift.TProcessorFunction) {$/;"	d
+AddToProcessorMap	gen-go1/rest/rest.go	/^func (p *RestProcessor) AddToProcessorMap(key string, processor thrift.TProcessorFunction) {$/;"	d
+Config	gen-go/rest/rest.go	/^func (p *RestClient) Config(client_id string) (r string, err error) {$/;"	d
+Config	gen-go1/rest/rest-remote/main.go	/^func (this *RpcServiceImpl) Config(client_id string) (r string, err error) {$/;"	d
+Config	gen-go1/rest/rest.go	/^func (p *RestClient) Config(client_id string) (r string, err error) {$/;"	d
+Config	main.go	/^func (this *RpcServiceImpl) Config(client_id string) (r string, err error) {$/;"	d
+ConfigArgs	gen-go/rest/rest.go	/^type ConfigArgs struct {$/;"	d
+ConfigArgs	gen-go1/rest/rest.go	/^type ConfigArgs struct {$/;"	d
+ConfigResult	gen-go/rest/rest.go	/^type ConfigResult struct {$/;"	d
+ConfigResult	gen-go1/rest/rest.go	/^type ConfigResult struct {$/;"	d
+GetProcessorFunction	gen-go/rest/rest.go	/^func (p *RestProcessor) GetProcessorFunction(key string) (processor thrift.TProcessorFunction, ok bool) {$/;"	d
+GetProcessorFunction	gen-go1/rest/rest.go	/^func (p *RestProcessor) GetProcessorFunction(key string) (processor thrift.TProcessorFunction, ok bool) {$/;"	d
+GoUnusedProtection__	gen-go/rest/ttypes.go	/^var GoUnusedProtection__ int$/;"	d
+GoUnusedProtection__	gen-go1/rest/ttypes.go	/^var GoUnusedProtection__ int$/;"	d
+Json	test.go	/^type Json struct {$/;"	d
+NewAddArgs	gen-go/rest/rest.go	/^func NewAddArgs() *AddArgs {$/;"	d
+NewAddResult	gen-go/rest/rest.go	/^func NewAddResult() *AddResult {$/;"	d
+NewConfigArgs	gen-go/rest/rest.go	/^func NewConfigArgs() *ConfigArgs {$/;"	d
+NewConfigArgs	gen-go1/rest/rest.go	/^func NewConfigArgs() *ConfigArgs {$/;"	d
+NewConfigResult	gen-go/rest/rest.go	/^func NewConfigResult() *ConfigResult {$/;"	d
+NewConfigResult	gen-go1/rest/rest.go	/^func NewConfigResult() *ConfigResult {$/;"	d
+NewRestClientFactory	gen-go/rest/rest.go	/^func NewRestClientFactory(t thrift.TTransport, f thrift.TProtocolFactory) *RestClient {$/;"	d
+NewRestClientFactory	gen-go1/rest/rest.go	/^func NewRestClientFactory(t thrift.TTransport, f thrift.TProtocolFactory) *RestClient {$/;"	d
+NewRestClientProtocol	gen-go/rest/rest.go	/^func NewRestClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot thrift.TProtocol) *RestClient {$/;"	d
+NewRestClientProtocol	gen-go1/rest/rest.go	/^func NewRestClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot thrift.TProtocol) *RestClient {$/;"	d
+NewRestProcessor	gen-go/rest/rest.go	/^func NewRestProcessor(handler Rest) *RestProcessor {$/;"	d
+NewRestProcessor	gen-go1/rest/rest.go	/^func NewRestProcessor(handler Rest) *RestProcessor {$/;"	d
+Process	gen-go/rest/rest.go	/^func (p *RestProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {$/;"	d
+Process	gen-go/rest/rest.go	/^func (p *restProcessorAdd) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {$/;"	d
+Process	gen-go/rest/rest.go	/^func (p *restProcessorConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {$/;"	d
+Process	gen-go1/rest/rest.go	/^func (p *RestProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {$/;"	d
+Process	gen-go1/rest/rest.go	/^func (p *restProcessorConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {$/;"	d
+ProcessorMap	gen-go/rest/rest.go	/^func (p *RestProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {$/;"	d
+ProcessorMap	gen-go1/rest/rest.go	/^func (p *RestProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {$/;"	d
+Read	gen-go/rest/rest.go	/^func (p *AddArgs) Read(iprot thrift.TProtocol) error {$/;"	d
+Read	gen-go/rest/rest.go	/^func (p *AddResult) Read(iprot thrift.TProtocol) error {$/;"	d
+Read	gen-go/rest/rest.go	/^func (p *ConfigArgs) Read(iprot thrift.TProtocol) error {$/;"	d
+Read	gen-go/rest/rest.go	/^func (p *ConfigResult) Read(iprot thrift.TProtocol) error {$/;"	d
+Read	gen-go1/rest/rest.go	/^func (p *ConfigArgs) Read(iprot thrift.TProtocol) error {$/;"	d
+Read	gen-go1/rest/rest.go	/^func (p *ConfigResult) Read(iprot thrift.TProtocol) error {$/;"	d
+Rest	gen-go/rest/rest.go	/^type Rest interface {$/;"	d
+Rest	gen-go1/rest/rest.go	/^type Rest interface {$/;"	d
+RestClient	gen-go/rest/rest.go	/^type RestClient struct {$/;"	d
+RestClient	gen-go1/rest/rest.go	/^type RestClient struct {$/;"	d
+RestProcessor	gen-go/rest/rest.go	/^type RestProcessor struct {$/;"	d
+RestProcessor	gen-go1/rest/rest.go	/^type RestProcessor struct {$/;"	d
+RpcServiceImpl	gen-go1/rest/rest-remote/main.go	/^type RpcServiceImpl struct {$/;"	d
+RpcServiceImpl	main.go	/^type RpcServiceImpl struct {$/;"	d
+String	gen-go/rest/rest.go	/^func (p *AddArgs) String() string {$/;"	d
+String	gen-go/rest/rest.go	/^func (p *AddResult) String() string {$/;"	d
+String	gen-go/rest/rest.go	/^func (p *ConfigArgs) String() string {$/;"	d
+String	gen-go/rest/rest.go	/^func (p *ConfigResult) String() string {$/;"	d
+String	gen-go1/rest/rest.go	/^func (p *ConfigArgs) String() string {$/;"	d
+String	gen-go1/rest/rest.go	/^func (p *ConfigResult) String() string {$/;"	d
+Usage	gen-go/rest/rest-remote/rest-remote.go	/^func Usage() {$/;"	d
+Usage	gen-go1/rest/rest-remote/rest-remote.go	/^func Usage() {$/;"	d
+Usage	rest-remote.go	/^func Usage() {$/;"	d
+Write	gen-go/rest/rest.go	/^func (p *AddArgs) Write(oprot thrift.TProtocol) error {$/;"	d
+Write	gen-go/rest/rest.go	/^func (p *AddResult) Write(oprot thrift.TProtocol) error {$/;"	d
+Write	gen-go/rest/rest.go	/^func (p *ConfigArgs) Write(oprot thrift.TProtocol) error {$/;"	d
+Write	gen-go/rest/rest.go	/^func (p *ConfigResult) Write(oprot thrift.TProtocol) error {$/;"	d
+Write	gen-go1/rest/rest.go	/^func (p *ConfigArgs) Write(oprot thrift.TProtocol) error {$/;"	d
+Write	gen-go1/rest/rest.go	/^func (p *ConfigResult) Write(oprot thrift.TProtocol) error {$/;"	d
+add	main.go	/^func add(w http.ResponseWriter, r *http.Request) {$/;"	d
+config	gen-go1/rest/rest-remote/main.go	/^func config(w http.ResponseWriter, r *http.Request) {$/;"	d
+config	main.go	/^func config(w http.ResponseWriter, r *http.Request) {$/;"	d
+enc_dec_url	test.go	/^func enc_dec_url() {$/;"	d
+err	gen-go/rest/rest-remote/rest-remote.go	/^	var err error$/;"	d
+err	gen-go1/rest/rest-remote/rest-remote.go	/^	var err error$/;"	d
+err	rest-remote.go	/^	var err error$/;"	d
+error3	gen-go/rest/rest.go	/^		var error3 error$/;"	d
+error3	gen-go1/rest/rest.go	/^		var error3 error$/;"	d
+error7	gen-go/rest/rest.go	/^		var error7 error$/;"	d
+framed	gen-go/rest/rest-remote/rest-remote.go	/^	var framed bool$/;"	d
+framed	gen-go1/rest/rest-remote/rest-remote.go	/^	var framed bool$/;"	d
+framed	rest-remote.go	/^	var framed bool$/;"	d
+host	gen-go/rest/rest-remote/rest-remote.go	/^	var host string$/;"	d
+host	gen-go1/rest/rest-remote/rest-remote.go	/^	var host string$/;"	d
+host	rest-remote.go	/^	var host string$/;"	d
+http_client	gen-go1/rest/rest-remote/test.go	/^type http_client struct {$/;"	d
+http_client	test.go	/^type http_client struct {$/;"	d
+http_protocol	gen-go1/rest/rest-remote/test.go	/^type http_protocol struct {$/;"	d
+http_protocol	test.go	/^type http_protocol struct {$/;"	d
+init	gen-go/rest/constants.go	/^func init() {$/;"	d
+init	gen-go1/rest/constants.go	/^func init() {$/;"	d
+main	gen-go/rest/rest-remote/rest-remote.go	/^func main() {$/;"	d
+main	gen-go1/rest/rest-remote/main.go	/^func main() {$/;"	d
+main	gen-go1/rest/rest-remote/rest-remote.go	/^func main() {$/;"	d
+main	gen-go1/rest/rest-remote/test.go	/^func main() {$/;"	d
+main	main.go	/^func main() {$/;"	d
+main	rest-remote.go	/^func main() {$/;"	d
+main	test.go	/^func main() {$/;"	d
+main1	gen-go1/rest/rest-remote/main.go	/^func main1() {$/;"	d
+main1	main.go	/^\/\/ func main1() {$/;"	d
+parsedUrl	gen-go/rest/rest-remote/rest-remote.go	/^	var parsedUrl url.URL$/;"	d
+parsedUrl	gen-go1/rest/rest-remote/rest-remote.go	/^	\/\/var parsedUrl url.URL$/;"	d
+parsedUrl	rest-remote.go	/^	\/\/var parsedUrl url.URL$/;"	d
+port	gen-go/rest/rest-remote/rest-remote.go	/^	var port int$/;"	d
+port	gen-go1/rest/rest-remote/rest-remote.go	/^	var port int$/;"	d
+port	rest-remote.go	/^	var port int$/;"	d
+protocol	gen-go/rest/rest-remote/rest-remote.go	/^	var protocol string$/;"	d
+protocol	gen-go1/rest/rest-remote/rest-remote.go	/^	var protocol string$/;"	d
+protocol	rest-remote.go	/^	var protocol string$/;"	d
+protocolFactory	gen-go/rest/rest-remote/rest-remote.go	/^	var protocolFactory thrift.TProtocolFactory$/;"	d
+protocolFactory	gen-go1/rest/rest-remote/rest-remote.go	/^	\/\/ var protocolFactory thrift.TProtocolFactory$/;"	d
+protocolFactory	rest-remote.go	/^	\/\/ var protocolFactory thrift.TProtocolFactory$/;"	d
+read	gen-go1/rest/rest-remote/test.go	/^func (c *http_client) read(buffer []string) {$/;"	d
+read	gen-go1/rest/rest-remote/test.go	/^func (p *http_protocol) read() {$/;"	d
+read	test.go	/^func (c *http_client) read(buffer []string) {$/;"	d
+read	test.go	/^func (p *http_protocol) read() {$/;"	d
+readField0	gen-go/rest/rest.go	/^func (p *AddResult) readField0(iprot thrift.TProtocol) error {$/;"	d
+readField0	gen-go/rest/rest.go	/^func (p *ConfigResult) readField0(iprot thrift.TProtocol) error {$/;"	d
+readField0	gen-go1/rest/rest.go	/^func (p *ConfigResult) readField0(iprot thrift.TProtocol) error {$/;"	d
+readField1	gen-go/rest/rest.go	/^func (p *AddArgs) readField1(iprot thrift.TProtocol) error {$/;"	d
+readField1	gen-go/rest/rest.go	/^func (p *ConfigArgs) readField1(iprot thrift.TProtocol) error {$/;"	d
+readField1	gen-go1/rest/rest.go	/^func (p *ConfigArgs) readField1(iprot thrift.TProtocol) error {$/;"	d
+readField2	gen-go/rest/rest.go	/^func (p *AddArgs) readField2(iprot thrift.TProtocol) error {$/;"	d
+recvAdd	gen-go/rest/rest.go	/^func (p *RestClient) recvAdd() (value int32, err error) {$/;"	d
+recvConfig	gen-go/rest/rest.go	/^func (p *RestClient) recvConfig() (value string, err error) {$/;"	d
+recvConfig	gen-go1/rest/rest.go	/^func (p *RestClient) recvConfig() (value string, err error) {$/;"	d
+restProcessorAdd	gen-go/rest/rest.go	/^type restProcessorAdd struct {$/;"	d
+restProcessorConfig	gen-go/rest/rest.go	/^type restProcessorConfig struct {$/;"	d
+restProcessorConfig	gen-go1/rest/rest.go	/^type restProcessorConfig struct {$/;"	d
+sendAdd	gen-go/rest/rest.go	/^func (p *RestClient) sendAdd(num1 int32, num2 int32) (err error) {$/;"	d
+sendConfig	gen-go/rest/rest.go	/^func (p *RestClient) sendConfig(client_id string) (err error) {$/;"	d
+sendConfig	gen-go1/rest/rest.go	/^func (p *RestClient) sendConfig(client_id string) (err error) {$/;"	d
+test_convert	test.go	/^func test_convert() {$/;"	d
+test_path	test.go	/^func test_path() {$/;"	d
+test_template	test.go	/^func test_template() {$/;"	d
+test_template2	test.go	/^func test_template2() {$/;"	d
+tprotocol	gen-go1/rest/rest-remote/rest-remote.go	/^	var tprotocol thrift.TProtocol$/;"	d
+tprotocol	rest-remote.go	/^	var tprotocol thrift.TProtocol$/;"	d
+trans	gen-go/rest/rest-remote/rest-remote.go	/^	var trans thrift.TTransport$/;"	d
+trans	gen-go1/rest/rest-remote/rest-remote.go	/^	var trans thrift.TTransport$/;"	d
+trans	rest-remote.go	/^	var trans thrift.TTransport$/;"	d
+urlString	gen-go/rest/rest-remote/rest-remote.go	/^	var urlString string$/;"	d
+urlString	gen-go1/rest/rest-remote/rest-remote.go	/^	var urlString string$/;"	d
+urlString	rest-remote.go	/^	var urlString string$/;"	d
+useHttp	gen-go/rest/rest-remote/rest-remote.go	/^	var useHttp bool$/;"	d
+useHttp	gen-go1/rest/rest-remote/rest-remote.go	/^	var useHttp bool$/;"	d
+useHttp	rest-remote.go	/^	var useHttp bool$/;"	d
+writeField0	gen-go/rest/rest.go	/^func (p *AddResult) writeField0(oprot thrift.TProtocol) (err error) {$/;"	d
+writeField0	gen-go/rest/rest.go	/^func (p *ConfigResult) writeField0(oprot thrift.TProtocol) (err error) {$/;"	d
+writeField0	gen-go1/rest/rest.go	/^func (p *ConfigResult) writeField0(oprot thrift.TProtocol) (err error) {$/;"	d
+writeField1	gen-go/rest/rest.go	/^func (p *AddArgs) writeField1(oprot thrift.TProtocol) (err error) {$/;"	d
+writeField1	gen-go/rest/rest.go	/^func (p *ConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {$/;"	d
+writeField1	gen-go1/rest/rest.go	/^func (p *ConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {$/;"	d
+writeField2	gen-go/rest/rest.go	/^func (p *AddArgs) writeField2(oprot thrift.TProtocol) (err error) {$/;"	d

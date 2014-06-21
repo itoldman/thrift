@@ -79,12 +79,8 @@ func (p *THTTPProtocolFactory) GetProtocol(t TTransport) TProtocol {
  */
 
 func (p *THTTPProtocol) WriteMessageBegin(name string, typeId TMessageType, seqId int32) error {
-	fmt.Println("HTTP protocol WriteMessageBegin")
-	if value, ok := p.origTransport.(*THttpClient); ok {
-		value.SeqId = seqId
-		return value.SetUrl("/" + name)
-	}
-	return errors.New("THTTPProtocol can only work with THttpClient transport")
+	_, err := p.trans.WriteString(fmt.Sprintf("method=%s&seq_id=%d&", name, seqId))
+	return err
 }
 
 func (p *THTTPProtocol) WriteMessageEnd() error {
@@ -100,7 +96,7 @@ func (p *THTTPProtocol) WriteStructEnd() error {
 }
 
 func (p *THTTPProtocol) WriteFieldBegin(name string, typeId TType, id int16) error {
-	_, err := p.trans.WriteString(name + "=")
+	_, err := p.trans.WriteString(fmt.Sprintf("%d=", id))
 	return err
 }
 
@@ -176,9 +172,12 @@ func (p *THTTPProtocol) WriteBinary(value []byte) error {
  */
 
 func (p *THTTPProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
-	if value, ok := p.origTransport.(*THttpClient); ok {
 
-		return "", 1, value.SeqId, nil
+	if value, ok := p.origTransport.(*THttpClient); ok {
+		seq1 := value.response.Header.Get("seq_id")
+		seq2, _ := strconv.Atoi(seq1)
+		fmt.Printf("response seq_id is:%d\n", seq2)
+		return "", 1, int32(seq2), nil
 	}
 
 	return "", 1, 0, errors.New("THTTPProtocol can only work with THttpClient transport")
@@ -201,12 +200,12 @@ func (p *THTTPProtocol) ReadFieldBegin() (name string, typeId TType, fieldId int
 	p.count++
 	//fmt.Printf("buffer length is:%d\n", len(p.buffer))
 	if p.count > 1 {
-		return "", 0, 0, nil
+		return "", STOP, 0, nil
 	}
 	// if len(p.buffer) > 0 {
 	// 	return "", 0, 0, nil
 	// }
-	return "", 1, 0, nil
+	return "", VOID, 0, nil
 }
 
 func (p *THTTPProtocol) ReadFieldEnd() error {
@@ -252,10 +251,10 @@ func (p *THTTPProtocol) ReadI16() (value int16, err error) {
 }
 
 func (p *THTTPProtocol) ReadI32() (value int32, err error) {
-	p.trans.Read(p.buffer)
+	len, _ := p.trans.Read(p.buffer)
 	//fmt.Printf("Http protocol ReadI32, p.buffer:%v\n", p.buffer)
 
-	s := string(p.buffer[:1])
+	s := string(p.buffer[:len])
 	fmt.Printf("Http protocol ReadI32, s:%v\n", s)
 
 	i, _ := strconv.Atoi(s)

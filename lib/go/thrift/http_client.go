@@ -21,10 +21,12 @@ package thrift
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 
 	//"strings"
@@ -98,11 +100,18 @@ func NewTHttpPostClient(urlstr string) (TTransport, error) {
 	return &THttpClient{url: parsedURL, requestBuffer: bytes.NewBuffer(buf), header: http.Header{}}, nil
 }
 
-func NewTHttpRPCClient(schema string, host string, port int) (TTransport, error) {
+func NewTHttpRPCClient(schema string, host string, port int, urlString string) (TTransport, error) {
 	buf := make([]byte, 0, 1024)
 	body := make([]byte, 0, 1024)
+	fmt.Printf("urlString is %v\n", urlString)
 
-	return &THttpClient{schema: schema, host: host, port: port, requestBuffer: bytes.NewBuffer(buf), body: bytes.NewBuffer(body), header: http.Header{}}, nil
+	parsedUrl, err := url.Parse(urlString)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
+		return nil, errors.New("Invalid url")
+	}
+
+	return &THttpClient{schema: schema, host: host, port: port, requestBuffer: bytes.NewBuffer(buf), body: bytes.NewBuffer(body), header: http.Header{}, url: parsedUrl}, nil
 }
 
 func (p *THttpClient) SetUrl(path string) error {
@@ -176,12 +185,10 @@ func (p *THttpClient) Read(buf []byte) (int, error) {
 	if p.response == nil {
 		return 0, NewTTransportException(NOT_OPEN, "Response buffer is empty, no request.")
 	}
-	//buf = p.body
-	//buf = make([]byte, 0, 1024)
+	length := p.body.Len()
 	copy(buf, p.body.Bytes())
-	//p.body.Read(buf)
 	fmt.Printf("read to buf:%s\n", string(buf))
-	return len(buf), nil
+	return length, nil
 }
 
 func (p *THttpClient) ReadBody() ([]byte, error) {
