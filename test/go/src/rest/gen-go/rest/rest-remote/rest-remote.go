@@ -6,7 +6,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"git.apache.org/thrift.git/lib/go/thrift"
 	"math"
 	"net"
 	"net/url"
@@ -14,6 +13,7 @@ import (
 	"rest"
 	"strconv"
 	"strings"
+	"thrift/lib/go/thrift"
 )
 
 func Usage() {

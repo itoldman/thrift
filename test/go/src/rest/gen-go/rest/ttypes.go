@@ -5,8 +5,8 @@ package rest
 
 import (
 	"fmt"
-	"git.apache.org/thrift.git/lib/go/thrift"
 	"math"
+	"thrift/lib/go/thrift"
 )
 
 // (needed to ensure safety because of naive import list construction.)
