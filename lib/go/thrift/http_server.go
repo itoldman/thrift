@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	DEFAULT_URL = "/_rpc_handler_"
+	DEFAULT_URL = "/"
 )
 
 // Simple, non-concurrent server for testing.
@@ -66,7 +66,7 @@ func (p *THTTPServer) Stop() error {
 }
 
 func (p *THTTPServer) rpcHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	//r.ParseForm()
 	defer func() {
 		if e := recover(); e != nil {
 			log.Printf("panic in processor: %s: %s", e, debug.Stack())

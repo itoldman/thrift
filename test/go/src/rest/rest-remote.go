@@ -12,9 +12,9 @@ import (
 	"net"
 	"net/url"
 	"os"
-	"rest/gen-go/rest"
 	"strconv"
 	"strings"
+	"thrift/test/go/src/rest/gen-go/rest"
 )
 
 func Usage() {
@@ -72,7 +72,7 @@ func main() {
 
 		//trans, err = thrift.NewTHttpClient(parsedUrl.String())
 
-		trans, err = thrift.NewTHttpRPCClient("http", "localhost", 9090, urlString)
+		trans, err = thrift.NewTHttpRPCClient("http", "localhost", 9090)
 	} else {
 		portStr := fmt.Sprint(port)
 		if strings.Contains(host, ":") {
@@ -132,6 +132,19 @@ func main() {
 	}
 
 	switch cmd {
+	case "eve":
+		trans, err = thrift.NewTHttpRPCClient("http", "eve.pf.tap4fun.com", 10000)
+		tprotocol = thrift.NewTHTTPProtocolTransport(trans)
+		client := rest.NewRestClientProtocol(trans, tprotocol, tprotocol)
+		Result, err := client.ConfigGet("test:1.0.0")
+		//Result, err := client.Add(1, 2)
+		if err != nil {
+			fmt.Printf("Got result err:%v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Eve config reslut is:%v\n", Result)
+		fmt.Print("\n")
+		break
 	case "config":
 		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "Config requires 1 args")
@@ -140,7 +153,7 @@ func main() {
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		fmt.Println("Executing config function")
-		Result, err := client.Config(value0)
+		Result, err := client.ConfigGet(value0)
 		//Result, err := client.Add(1, 2)
 		if err != nil {
 			fmt.Printf("Got result err:%v\n", err)
@@ -155,7 +168,7 @@ func main() {
 		i1, _ := strconv.Atoi(argvalue0)
 		argvalue1 := flag.Arg(2)
 		i2, _ := strconv.Atoi((argvalue1))
-		Result, err := client.Add(int32(i1), int32(i2))
+		Result, err := client.AddPost(int32(i1), int32(i2))
 		if err != nil {
 			fmt.Printf("Got result err:%v\n", err)
 			os.Exit(1)

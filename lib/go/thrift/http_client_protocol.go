@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 	//"encoding/binary"
 )
 
@@ -79,8 +80,19 @@ func (p *THTTPProtocolFactory) GetProtocol(t TTransport) TProtocol {
  */
 
 func (p *THTTPProtocol) WriteMessageBegin(name string, typeId TMessageType, seqId int32) error {
-	_, err := p.trans.WriteString(fmt.Sprintf("method=%s&seq_id=%d&", name, seqId))
-	return err
+	if value, ok := p.origTransport.(*THttpClient); ok {
+		method, err := p.getMethod(name)
+		if err != nil {
+			return err
+		}
+		value.method = method
+		value.SetUrl(p.buildUrl(name))
+		_, err = p.trans.WriteString(fmt.Sprintf("method=%s&seq_id=%d&", name, seqId))
+		return err
+	}
+
+	return errors.New("THTTPProtocol can only work with THttpClient transport")
+
 }
 
 func (p *THTTPProtocol) WriteMessageEnd() error {
@@ -96,7 +108,7 @@ func (p *THTTPProtocol) WriteStructEnd() error {
 }
 
 func (p *THTTPProtocol) WriteFieldBegin(name string, typeId TType, id int16) error {
-	_, err := p.trans.WriteString(fmt.Sprintf("%d=", id))
+	_, err := p.trans.WriteString(fmt.Sprintf("%d=%s&%s=", id, name, name))
 	return err
 }
 
@@ -177,6 +189,9 @@ func (p *THTTPProtocol) ReadMessageBegin() (name string, typeId TMessageType, se
 		seq1 := value.response.Header.Get("seq_id")
 		seq2, _ := strconv.Atoi(seq1)
 		fmt.Printf("response seq_id is:%d\n", seq2)
+		if seq2 == 0 {
+			seq2++
+		}
 		return "", 1, int32(seq2), nil
 	}
 
@@ -300,4 +315,32 @@ func (p *THTTPProtocol) Transport() TTransport {
 func (p *THTTPProtocol) readAll(buf []byte) error {
 	_, err := io.ReadFull(p.reader, buf)
 	return NewTProtocolException(err)
+}
+
+func (p *THTTPProtocol) checkMethod(s string) bool {
+	l := []string{"get", "post", "del", "put"}
+	for i := 0; i < len(l); i++ {
+		if strings.HasSuffix(s, l[i]) {
+			return true
+		}
+
+	}
+	return false
+
+}
+
+func (p *THTTPProtocol) getMethod(s string) (string, error) {
+	l := []string{"get", "post", "del", "put"}
+	for i := 0; i < len(l); i++ {
+		if strings.HasSuffix(s, l[i]) {
+			return strings.ToUpper(l[i]), nil
+		}
+
+	}
+	return "", errors.New("Not end with get, post, del or put")
+}
+
+func (p *THTTPProtocol) buildUrl(s string) string {
+	l := strings.Split(s, "_")
+	return "/" + strings.Join(l[:len(l)-1], "/")
 }

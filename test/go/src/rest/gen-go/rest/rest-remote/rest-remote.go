@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"git.apache.org/thrift.git/lib/go/thrift"
 	"math"
 	"net"
 	"net/url"
@@ -13,16 +14,14 @@ import (
 	"rest"
 	"strconv"
 	"strings"
-	"thrift/lib/go/thrift"
 )
 
 func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  string config(string client_id)")
-	fmt.Fprintln(os.Stderr, "  i32 add(i32 num1, i32 num2)")
-	fmt.Fprintln(os.Stderr, "   test1(bool value1, i16 value2, i64 value3, double value4, string value5,  value6,  value7)")
+	fmt.Fprintln(os.Stderr, "  string config_get(string client_id)")
+	fmt.Fprintln(os.Stderr, "  i32 add_post(i32 num1, i32 num2)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -117,103 +116,36 @@ func main() {
 	}
 
 	switch cmd {
-	case "config":
+	case "config_get":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "Config requires 1 args")
+			fmt.Fprintln(os.Stderr, "ConfigGet requires 1 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		fmt.Print(client.Config(value0))
+		fmt.Print(client.ConfigGet(value0))
 		fmt.Print("\n")
 		break
-	case "add":
+	case "add_post":
 		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "Add requires 2 args")
+			fmt.Fprintln(os.Stderr, "AddPost requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err19 := (strconv.Atoi(flag.Arg(1)))
-		if err19 != nil {
+		tmp0, err11 := (strconv.Atoi(flag.Arg(1)))
+		if err11 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err20 := (strconv.Atoi(flag.Arg(2)))
-		if err20 != nil {
+		tmp1, err12 := (strconv.Atoi(flag.Arg(2)))
+		if err12 != nil {
 			Usage()
 			return
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		fmt.Print(client.Add(value0, value1))
-		fmt.Print("\n")
-		break
-	case "test1":
-		if flag.NArg()-1 != 7 {
-			fmt.Fprintln(os.Stderr, "Test1 requires 7 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1) == "true"
-		value0 := argvalue0
-		tmp1, err22 := (strconv.Atoi(flag.Arg(2)))
-		if err22 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := byte(tmp1)
-		value1 := argvalue1
-		argvalue2, err23 := (strconv.ParseInt(flag.Arg(3), 10, 64))
-		if err23 != nil {
-			Usage()
-			return
-		}
-		value2 := argvalue2
-		argvalue3, err24 := (strconv.ParseFloat(flag.Arg(4), 64))
-		if err24 != nil {
-			Usage()
-			return
-		}
-		value3 := argvalue3
-		argvalue4 := flag.Arg(5)
-		value4 := argvalue4
-		arg26 := flag.Arg(6)
-		mbTrans27 := thrift.NewTMemoryBufferLen(len(arg26))
-		defer mbTrans27.Close()
-		_, err28 := mbTrans27.WriteString(arg26)
-		if err28 != nil {
-			Usage()
-			return
-		}
-		factory29 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt30 := factory29.GetProtocol(mbTrans27)
-		containerStruct5 := rest.NewTest1Args()
-		err31 := containerStruct5.ReadField6(jsProt30)
-		if err31 != nil {
-			Usage()
-			return
-		}
-		argvalue5 := containerStruct5.Value6
-		value5 := argvalue5
-		arg32 := flag.Arg(7)
-		mbTrans33 := thrift.NewTMemoryBufferLen(len(arg32))
-		defer mbTrans33.Close()
-		_, err34 := mbTrans33.WriteString(arg32)
-		if err34 != nil {
-			Usage()
-			return
-		}
-		factory35 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt36 := factory35.GetProtocol(mbTrans33)
-		containerStruct6 := rest.NewTest1Args()
-		err37 := containerStruct6.ReadField7(jsProt36)
-		if err37 != nil {
-			Usage()
-			return
-		}
-		argvalue6 := containerStruct6.Value7
-		value6 := argvalue6
-		fmt.Print(client.Test1(value0, value1, value2, value3, value4, value5, value6))
+		fmt.Print(client.AddPost(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":
