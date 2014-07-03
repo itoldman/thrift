@@ -21,12 +21,12 @@ package thrift
 
 import (
 	"bytes"
-	"errors"
+	//"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
+	//"os"
 	"strconv"
 
 	//"strings"
@@ -38,12 +38,13 @@ type THttpClient struct {
 	port               int
 	response           *http.Response
 	body               *bytes.Buffer
-	url                *url.URL
+	url                string
 	requestBuffer      *bytes.Buffer
 	header             http.Header
 	nsecConnectTimeout int64
 	nsecReadTimeout    int64
 	SeqId              int32
+	method             string
 }
 
 type THttpClientTransportFactory struct {
@@ -54,12 +55,12 @@ type THttpClientTransportFactory struct {
 func (p *THttpClientTransportFactory) GetTransport(trans TTransport) TTransport {
 	if trans != nil {
 		t, ok := trans.(*THttpClient)
-		if ok && t.url != nil {
+		if ok && t.url != "" {
 			if t.requestBuffer != nil {
-				t2, _ := NewTHttpPostClient(t.url.String())
+				t2, _ := NewTHttpPostClient(t.url)
 				return t2
 			}
-			t2, _ := NewTHttpClient(t.url.String())
+			t2, _ := NewTHttpClient(t.url)
 			return t2
 		}
 	}
@@ -80,7 +81,7 @@ func NewTHttpPostClientTransportFactory(url string) *THttpClientTransportFactory
 }
 
 func NewTHttpClient(urlstr string) (TTransport, error) {
-	parsedURL, err := url.Parse(urlstr)
+	_, err := url.Parse(urlstr)
 	if err != nil {
 		return nil, err
 	}
@@ -88,39 +89,32 @@ func NewTHttpClient(urlstr string) (TTransport, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &THttpClient{response: response, url: parsedURL}, nil
+	return &THttpClient{response: response, url: urlstr}, nil
 }
 
 func NewTHttpPostClient(urlstr string) (TTransport, error) {
-	parsedURL, err := url.Parse(urlstr)
+	_, err := url.Parse(urlstr)
 	if err != nil {
 		return nil, err
 	}
 	buf := make([]byte, 0, 1024)
-	return &THttpClient{url: parsedURL, requestBuffer: bytes.NewBuffer(buf), header: http.Header{}}, nil
+	return &THttpClient{url: urlstr, requestBuffer: bytes.NewBuffer(buf), header: http.Header{}}, nil
 }
 
-func NewTHttpRPCClient(schema string, host string, port int, urlString string) (TTransport, error) {
+func NewTHttpRPCClient(schema string, host string, port int) (TTransport, error) {
 	buf := make([]byte, 0, 1024)
 	body := make([]byte, 0, 1024)
-	fmt.Printf("urlString is %v\n", urlString)
 
-	parsedUrl, err := url.Parse(urlString)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
-		return nil, errors.New("Invalid url")
-	}
-
-	return &THttpClient{schema: schema, host: host, port: port, requestBuffer: bytes.NewBuffer(buf), body: bytes.NewBuffer(body), header: http.Header{}, url: parsedUrl}, nil
+	return &THttpClient{schema: schema, host: host, port: port, requestBuffer: bytes.NewBuffer(buf), body: bytes.NewBuffer(body), header: http.Header{}}, nil
 }
 
 func (p *THttpClient) SetUrl(path string) error {
 	urlstr := fmt.Sprint(p.schema, "://", p.host, ":", p.port, path)
-	parsedURL, err := url.Parse(urlstr)
+	_, err := url.Parse(urlstr)
 	if err != nil {
 		return err
 	}
-	p.url = parsedURL
+	p.url = urlstr
 	return nil
 }
 
@@ -217,7 +211,14 @@ func (p *THttpClient) WriteString(s string) (n int, err error) {
 func (p *THttpClient) Flush() error {
 	fmt.Println("Http client flushing")
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", p.url.String(), p.requestBuffer)
+	var req *http.Request
+	var err error
+	if p.method == "POST" {
+		req, err = http.NewRequest("POST", p.url, p.requestBuffer)
+	} else if p.method == "GET" {
+		req, err = http.NewRequest("GET", p.buildGetUrl(), nil)
+	}
+
 	//req, err := http.NewRequest("POST", "http://localhost:9090/config", strings.NewReader("client_id=gl"))
 
 	fmt.Printf("Http request is:%v\n", req)
@@ -251,4 +252,8 @@ func (p *THttpClient) Flush() error {
 	p.body.Write(body)
 	p.response = response
 	return nil
+}
+
+func (p *THttpClient) buildGetUrl() string {
+	return p.url + "?" + p.requestBuffer.String()
 }

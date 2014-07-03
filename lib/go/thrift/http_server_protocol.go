@@ -32,6 +32,7 @@ type THTTPServerProtocol struct {
 	w          http.ResponseWriter
 	r          *http.Request
 	fieldIndex int
+	fieldName  string
 	SeqId      int32
 	buffer     []byte
 }
@@ -165,8 +166,8 @@ func (p *THTTPServerProtocol) WriteBinary(value []byte) error {
  */
 
 func (p *THTTPServerProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
-	method := p.r.PostFormValue("method")
-	seqId1 := p.r.PostFormValue("seq_id")
+	method := p.r.FormValue("method")
+	seqId1 := p.r.FormValue("seq_id")
 	seqId2, _ := strconv.Atoi(seqId1)
 	seqId = int32(seqId2)
 	fmt.Printf("Got seq_id:%d\n", seqId)
@@ -189,11 +190,13 @@ func (p *THTTPServerProtocol) ReadStructEnd() error {
 
 func (p *THTTPServerProtocol) ReadFieldBegin() (name string, typeId TType, fieldId int16, err error) {
 	p.fieldIndex++
-	name = strconv.Itoa(p.fieldIndex)
-	value := p.r.PostFormValue(name)
-	if value == "" {
+	key := strconv.Itoa(p.fieldIndex)
+	name = p.r.FormValue(key)
+	p.fieldName = name
+	if name == "" {
 		return "", STOP, 0, nil
 	}
+
 	return name, VOID, int16(p.fieldIndex), nil
 }
 
@@ -240,8 +243,7 @@ func (p *THTTPServerProtocol) ReadI16() (value int16, err error) {
 }
 
 func (p *THTTPServerProtocol) ReadI32() (value int32, err error) {
-	i := strconv.Itoa(p.fieldIndex)
-	value1 := p.r.PostFormValue(i)
+	value1 := p.r.FormValue(p.fieldName)
 	value2, _ := strconv.Atoi(value1)
 	return int32(value2), nil
 
@@ -256,8 +258,7 @@ func (p *THTTPServerProtocol) ReadDouble() (value float64, err error) {
 }
 
 func (p *THTTPServerProtocol) ReadString() (value string, err error) {
-	i := strconv.Itoa(p.fieldIndex)
-	value = p.r.PostFormValue(i)
+	value = p.r.FormValue(p.fieldName)
 	return value, nil
 }
 
@@ -267,6 +268,7 @@ func (p *THTTPServerProtocol) ReadBinary() ([]byte, error) {
 
 func (p *THTTPServerProtocol) Flush() (err error) {
 	p.w.Header().Set("seq_id", fmt.Sprintf("%d", p.SeqId))
+	fmt.Printf("send response:%s\n", string(p.buffer))
 	p.w.Write(p.buffer)
 	p.buffer = p.buffer[:0]
 	return nil
