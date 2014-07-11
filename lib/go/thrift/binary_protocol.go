@@ -236,6 +236,10 @@ func (p *TBinaryProtocol) WriteBinary(value []byte) error {
  * Reading methods
  */
 
+func (p *TBinaryProtocol) ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error) {
+	return "", 1, 1, nil
+}
+
 func (p *TBinaryProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 	size, e := p.ReadI32()
 	if e != nil {

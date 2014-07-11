@@ -326,6 +326,10 @@ func (p *TCompactProtocol) WriteBinary(bin []byte) error {
 // Reading methods.
 //
 
+func (p *TCompactProtocol) ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error) {
+	return "", 1, 1, nil
+}
+
 // Read a message header.
 func (p *TCompactProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 	protocolId, err := p.ReadByte()

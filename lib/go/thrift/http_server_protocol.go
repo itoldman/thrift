@@ -32,8 +32,10 @@ import (
 type THTTPServerProtocol struct {
 	w          http.ResponseWriter
 	r          *http.Request
+	fname      string
 	fieldIndex int
 	fieldName  string
+	fields     map[string][]string
 	SeqId      int32
 	buffer     []byte
 }
@@ -168,9 +170,21 @@ func (p *THTTPServerProtocol) WriteBinary(value []byte) error {
 
 func (p *THTTPServerProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 	name = p.buildMethodName()
+	p.fname = name
+	p.fieldIndex = 0
 	return name, CALL, 1, nil
 }
 
+func (p *THTTPServerProtocol) ReadMessageBegin2(fields map[string][]string) (name string, typeId TMessageType, seqId int32, err error) {
+	fmt.Println("Well, go here!")
+	name = p.buildMethodName()
+	p.fields = fields
+	p.fname = name
+	fmt.Printf("fields map is:%v\n", fields)
+	fmt.Printf("function name is:%v\n", name)
+
+	return name, CALL, 1, nil
+}
 func (p *THTTPServerProtocol) ReadMessageEnd() error {
 	return nil
 }
@@ -184,14 +198,15 @@ func (p *THTTPServerProtocol) ReadStructEnd() error {
 }
 
 func (p *THTTPServerProtocol) ReadFieldBegin() (name string, typeId TType, fieldId int16, err error) {
-	p.fieldIndex++
-	key := strconv.Itoa(p.fieldIndex)
-	name = p.r.FormValue(key)
-	p.fieldName = name
-	if name == "" {
+	fmt.Printf("fields map is:%v\n", p.fields)
+	fmt.Printf("function name is:%v\n", p.fname)
+	fmt.Printf("field index is:%v\n", p.fieldIndex)
+	if p.fieldIndex >= len(p.fields[p.fname]) {
 		return "", STOP, 0, nil
 	}
-
+	name = p.fields[p.fname][p.fieldIndex]
+	p.fieldIndex++
+	p.fieldName = name
 	return name, VOID, int16(p.fieldIndex), nil
 }
 

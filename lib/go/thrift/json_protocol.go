@@ -160,7 +160,7 @@ func (p *TJSONProtocol) WriteSetEnd() error {
 func (p *TJSONProtocol) WriteBool(b bool) error {
 	if b {
 		return p.WriteI32(1)
-    }
+	}
 	return p.WriteI32(0)
 }
 
@@ -207,6 +207,9 @@ func (p *TJSONProtocol) WriteBinary(v []byte) error {
 }
 
 // Reading methods.
+func (p *TJSONProtocol) ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error) {
+	return "", 1, 1, nil
+}
 
 func (p *TJSONProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 	if isNull, err := p.ParseListBegin(); isNull || err != nil {
@@ -328,7 +331,7 @@ func (p *TJSONProtocol) ReadSetEnd() error {
 }
 
 func (p *TJSONProtocol) ReadBool() (bool, error) {
-	value, err := p.ReadI32(); 
+	value, err := p.ReadI32()
 	return (value != 0), err
 }
 

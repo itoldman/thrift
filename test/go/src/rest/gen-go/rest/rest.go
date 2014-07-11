@@ -14,6 +14,8 @@ var _ = math.MinInt32
 var _ = thrift.ZERO
 var _ = fmt.Printf
 
+var GFieldsMap = map[string][]string{"config_get": []string{"client_id"}}
+
 type Rest interface {
 	// Parameters:
 	//  - ClientId
@@ -131,7 +133,7 @@ func NewRestProcessor(handler Rest) *RestProcessor {
 }
 
 func (p *RestProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	name, _, seqId, err := iprot.ReadMessageBegin()
+	name, _, seqId, err := iprot.ReadMessageBegin2(GFieldsMap)
 	if err != nil {
 		return false, err
 	}

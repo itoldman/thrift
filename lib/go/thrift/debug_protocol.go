@@ -153,6 +153,10 @@ func (tdp *TDebugProtocol) WriteBinary(value []byte) error {
 	return err
 }
 
+func (p *TDebugProtocol) ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error) {
+	return "", 1, 1, nil
+}
+
 func (tdp *TDebugProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqid int32, err error) {
 	name, typeId, seqid, err = tdp.Delegate.ReadMessageBegin()
 	log.Printf("%sReadMessageBegin() (name=%#v, typeId=%#v, seqid=%#v, err=%#v)", tdp.LogPrefix, name, typeId, seqid, err)

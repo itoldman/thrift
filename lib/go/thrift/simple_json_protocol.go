@@ -69,7 +69,7 @@ type TSimpleJSONProtocol struct {
 	trans TTransport
 
 	parseContextStack []int
-	dumpContext []int
+	dumpContext       []int
 
 	writer *bufio.Writer
 	reader *bufio.Reader
@@ -286,6 +286,9 @@ func (p *TSimpleJSONProtocol) WriteBinary(v []byte) error {
 }
 
 // Reading methods.
+func (p *TSimpleJSONProtocol) ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error) {
+	return "", 1, 1, nil
+}
 
 func (p *TSimpleJSONProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 	if isNull, err := p.ParseListBegin(); isNull || err != nil {
@@ -330,9 +333,9 @@ func (p *TSimpleJSONProtocol) ReadFieldBegin() (string, TType, int16, error) {
 		case JSON_QUOTE:
 			p.reader.ReadByte()
 			name, err := p.ParseStringBody()
-            // simplejson is not meant to be read back into thrift 
-            // - see http://wiki.apache.org/thrift/ThriftUsageJava
-            // - use JSON instead
+			// simplejson is not meant to be read back into thrift
+			// - see http://wiki.apache.org/thrift/ThriftUsageJava
+			// - use JSON instead
 			if err != nil {
 				return name, STOP, 0, err
 			}

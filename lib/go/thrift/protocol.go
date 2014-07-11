@@ -48,6 +48,8 @@ type TProtocol interface {
 	WriteBinary(value []byte) error
 
 	ReadMessageBegin() (name string, typeId TMessageType, seqid int32, err error)
+	ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error)
+
 	ReadMessageEnd() error
 	ReadStructBegin() (name string, err error)
 	ReadStructEnd() error

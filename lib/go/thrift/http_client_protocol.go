@@ -182,6 +182,9 @@ func (p *THTTPProtocol) WriteBinary(value []byte) error {
 /**
  * Reading methods
  */
+func (p *THTTPProtocol) ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error) {
+	return "", 1, 1, nil
+}
 
 func (p *THTTPProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 
