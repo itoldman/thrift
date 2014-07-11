@@ -192,6 +192,9 @@ func (p *TJSONProtocol) WriteBinary(v []byte) error {
 }
 
 // Reading methods.
+func (p *TJSONProtocol) ReadMessageBegin2(map[string][]string) (name string, typeId TMessageType, seqid int32, err error) {
+	return "", 1, 1, nil
+}
 
 func (p *TJSONProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 	if isNull, err := p.ParseListBegin(); isNull || err != nil {
@@ -444,7 +447,6 @@ func (p *TJSONProtocol) OutputElemListBegin(elemType TType, size int) error {
 	}
 	return nil
 }
-
 
 func (p *TJSONProtocol) ParseElemListBegin() (elemType TType, size int, e error) {
 	if isNull, e := p.ParseListBegin(); isNull || e != nil {
