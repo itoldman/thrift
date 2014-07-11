@@ -18,10 +18,6 @@ type Rest interface {
 	// Parameters:
 	//  - ClientId
 	ConfigGet(client_id string) (r string, err error)
-	// Parameters:
-	//  - Num1
-	//  - Num2
-	AddPost(num1 int32, num2 int32) (r int32, err error)
 }
 
 type RestClient struct {
@@ -109,67 +105,6 @@ func (p *RestClient) recvConfigGet() (value string, err error) {
 	return
 }
 
-// Parameters:
-//  - Num1
-//  - Num2
-func (p *RestClient) AddPost(num1 int32, num2 int32) (r int32, err error) {
-	if err = p.sendAddPost(num1, num2); err != nil {
-		return
-	}
-	return p.recvAddPost()
-}
-
-func (p *RestClient) sendAddPost(num1 int32, num2 int32) (err error) {
-	oprot := p.OutputProtocol
-	if oprot == nil {
-		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.OutputProtocol = oprot
-	}
-	p.SeqId++
-	oprot.WriteMessageBegin("add_post", thrift.CALL, p.SeqId)
-	args4 := NewAddPostArgs()
-	args4.Num1 = num1
-	args4.Num2 = num2
-	err = args4.Write(oprot)
-	oprot.WriteMessageEnd()
-	oprot.Flush()
-	return
-}
-
-func (p *RestClient) recvAddPost() (value int32, err error) {
-	iprot := p.InputProtocol
-	if iprot == nil {
-		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.InputProtocol = iprot
-	}
-	_, mTypeId, seqId, err := iprot.ReadMessageBegin()
-	if err != nil {
-		return
-	}
-	if mTypeId == thrift.EXCEPTION {
-		error6 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error7 error
-		error7, err = error6.Read(iprot)
-		if err != nil {
-			return
-		}
-		if err = iprot.ReadMessageEnd(); err != nil {
-			return
-		}
-		err = error7
-		return
-	}
-	if p.SeqId != seqId {
-		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "ping failed: out of sequence response")
-		return
-	}
-	result5 := NewAddPostResult()
-	err = result5.Read(iprot)
-	iprot.ReadMessageEnd()
-	value = result5.Success
-	return
-}
-
 type RestProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
 	handler      Rest
@@ -190,10 +125,9 @@ func (p *RestProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewRestProcessor(handler Rest) *RestProcessor {
 
-	self8 := &RestProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self8.processorMap["config_get"] = &restProcessorConfigGet{handler: handler}
-	self8.processorMap["add_post"] = &restProcessorAddPost{handler: handler}
-	return self8
+	self4 := &RestProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self4.processorMap["config_get"] = &restProcessorConfigGet{handler: handler}
+	return self4
 }
 
 func (p *RestProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -206,12 +140,12 @@ func (p *RestProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, er
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x9 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x5 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x9.Write(oprot)
+	x5.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x9
+	return false, x5
 
 }
 
@@ -241,49 +175,6 @@ func (p *restProcessorConfigGet) Process(seqId int32, iprot, oprot thrift.TProto
 		return
 	}
 	if err2 := oprot.WriteMessageBegin("config_get", thrift.REPLY, seqId); err2 != nil {
-		err = err2
-	}
-	if err2 := result.Write(oprot); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 := oprot.WriteMessageEnd(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 := oprot.Flush(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err != nil {
-		return
-	}
-	return true, err
-}
-
-type restProcessorAddPost struct {
-	handler Rest
-}
-
-func (p *restProcessorAddPost) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := NewAddPostArgs()
-	if err = args.Read(iprot); err != nil {
-		iprot.ReadMessageEnd()
-		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("add_post", thrift.EXCEPTION, seqId)
-		x.Write(oprot)
-		oprot.WriteMessageEnd()
-		oprot.Flush()
-		return
-	}
-	iprot.ReadMessageEnd()
-	result := NewAddPostResult()
-	if result.Success, err = p.handler.AddPost(args.Num1, args.Num2); err != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing add_post: "+err.Error())
-		oprot.WriteMessageBegin("add_post", thrift.EXCEPTION, seqId)
-		x.Write(oprot)
-		oprot.WriteMessageEnd()
-		oprot.Flush()
-		return
-	}
-	if err2 := oprot.WriteMessageBegin("add_post", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 := result.Write(oprot); err == nil && err2 != nil {
@@ -474,207 +365,4 @@ func (p *ConfigGetResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("ConfigGetResult(%+v)", *p)
-}
-
-type AddPostArgs struct {
-	Num1 int32 `thrift:"num1,1,required"`
-	Num2 int32 `thrift:"num2,2,required"`
-}
-
-func NewAddPostArgs() *AddPostArgs {
-	return &AddPostArgs{}
-}
-
-func (p *AddPostArgs) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return fmt.Errorf("%T read error", p)
-	}
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return fmt.Errorf("%T field %d read error: %s", p, fieldId, err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 1:
-			if err := p.readField1(iprot); err != nil {
-				return err
-			}
-		case 2:
-			if err := p.readField2(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return fmt.Errorf("%T read struct end error: %s", p, err)
-	}
-	return nil
-}
-
-func (p *AddPostArgs) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
-		return fmt.Errorf("error reading field 1: %s")
-	} else {
-		p.Num1 = v
-	}
-	return nil
-}
-
-func (p *AddPostArgs) readField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
-		return fmt.Errorf("error reading field 2: %s")
-	} else {
-		p.Num2 = v
-	}
-	return nil
-}
-
-func (p *AddPostArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("add_post_args"); err != nil {
-		return fmt.Errorf("%T write struct begin error: %s", p, err)
-	}
-	if err := p.writeField1(oprot); err != nil {
-		return err
-	}
-	if err := p.writeField2(oprot); err != nil {
-		return err
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return fmt.Errorf("%T write field stop error: %s", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return fmt.Errorf("%T write struct stop error: %s", err)
-	}
-	return nil
-}
-
-func (p *AddPostArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("num1", thrift.I32, 1); err != nil {
-		return fmt.Errorf("%T write field begin error 1:num1: %s", p, err)
-	}
-	if err := oprot.WriteI32(int32(p.Num1)); err != nil {
-		return fmt.Errorf("%T.num1 (1) field write error: %s", p)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return fmt.Errorf("%T write field end error 1:num1: %s", p, err)
-	}
-	return err
-}
-
-func (p *AddPostArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("num2", thrift.I32, 2); err != nil {
-		return fmt.Errorf("%T write field begin error 2:num2: %s", p, err)
-	}
-	if err := oprot.WriteI32(int32(p.Num2)); err != nil {
-		return fmt.Errorf("%T.num2 (2) field write error: %s", p)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return fmt.Errorf("%T write field end error 2:num2: %s", p, err)
-	}
-	return err
-}
-
-func (p *AddPostArgs) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("AddPostArgs(%+v)", *p)
-}
-
-type AddPostResult struct {
-	Success int32 `thrift:"success,0"`
-}
-
-func NewAddPostResult() *AddPostResult {
-	return &AddPostResult{}
-}
-
-func (p *AddPostResult) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return fmt.Errorf("%T read error", p)
-	}
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return fmt.Errorf("%T field %d read error: %s", p, fieldId, err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 0:
-			if err := p.readField0(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return fmt.Errorf("%T read struct end error: %s", p, err)
-	}
-	return nil
-}
-
-func (p *AddPostResult) readField0(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
-		return fmt.Errorf("error reading field 0: %s")
-	} else {
-		p.Success = v
-	}
-	return nil
-}
-
-func (p *AddPostResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("add_post_result"); err != nil {
-		return fmt.Errorf("%T write struct begin error: %s", p, err)
-	}
-	switch {
-	default:
-		if err := p.writeField0(oprot); err != nil {
-			return err
-		}
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return fmt.Errorf("%T write field stop error: %s", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return fmt.Errorf("%T write struct stop error: %s", err)
-	}
-	return nil
-}
-
-func (p *AddPostResult) writeField0(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("success", thrift.I32, 0); err != nil {
-		return fmt.Errorf("%T write field begin error 0:success: %s", p, err)
-	}
-	if err := oprot.WriteI32(int32(p.Success)); err != nil {
-		return fmt.Errorf("%T.success (0) field write error: %s", p)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return fmt.Errorf("%T write field end error 0:success: %s", p, err)
-	}
-	return err
-}
-
-func (p *AddPostResult) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("AddPostResult(%+v)", *p)
 }

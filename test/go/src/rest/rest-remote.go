@@ -183,3 +183,67 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Invalid function ", cmd)
 	}
 }
+
+/*
+{"cfn":{"status":"none","env":"gold","servers":{"callback":"http://callback.us.pf.tap4fun.com:20100","name":"http://name.us.pf.tap4fun.com:20000"}},
+	"hzc":{"status":"none","env":"alpha","servers":{"callback":"http://valpha.pf.tap4fun.com:20100","name":"http://valpha.pf.tap4fun.com:20000"}}}
+*/
+type Error struct {
+	errorCode int32
+	message   string
+}
+
+type ServersConfig struct {
+	Callback string
+	Name     string
+}
+
+type DataCenterConfig struct {
+	Status  string
+	Env     string
+	Servers ServersConfig
+}
+
+func Init() *rest.RestClient {
+	trans, err = thrift.NewTHttpRPCClient("http", "eve.pf.tap4fun.com", 10000)
+	tprotocol = thrift.NewTHTTPProtocolTransport(trans)
+	client := rest.NewRestClientProtocol(trans, tprotocol, tprotocol)
+	return client
+}
+
+/*
+func GetConfig(client *rest.RestClient) (s string) {
+	Result, err := client.ConfigGet("test:1.0.0")
+	//Result, err := client.Add(1, 2)
+	if err != nil {
+		fmt.Printf("Got result err:%v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Eve config reslut is:%v\n", Result)
+	return s
+}
+*/
+
+func GetConfig(client *rest.RestClient) (*map[string][DataCenterConfig], *Error) {
+	Result, err := client.ConfigGet("test:1.0.0")
+	//Result, err := client.Add(1, 2)
+	if err != nil {
+		fmt.Printf("Got result err:%v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Eve config reslut is:%v\n", Result)
+	return &decodeConfigJson(Result)
+}
+
+
+
+func decodeConfigJson(s string) (*map[string][DataCenterConfig], *Error) {
+	config := EveConfig{}
+	err := json.Unmarshal(s, &config)
+	if err != nil {
+		WriteResponse(nil, common.Error{ptnet.ERROR_INTERNAL_LOGIC, fmt.Sprintf("Parse Mycard Ingame auth response to internal struct error: %v", err)}, w, r)
+		return
+	}
+	fmt.Printf("Got config response :%v", config)
+	return config
+}

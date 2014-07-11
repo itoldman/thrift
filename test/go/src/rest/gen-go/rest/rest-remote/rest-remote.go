@@ -21,7 +21,6 @@ func Usage() {
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  string config_get(string client_id)")
-	fmt.Fprintln(os.Stderr, "  i32 add_post(i32 num1, i32 num2)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -124,28 +123,6 @@ func main() {
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		fmt.Print(client.ConfigGet(value0))
-		fmt.Print("\n")
-		break
-	case "add_post":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "AddPost requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err11 := (strconv.Atoi(flag.Arg(1)))
-		if err11 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		tmp1, err12 := (strconv.Atoi(flag.Arg(2)))
-		if err12 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.AddPost(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":

@@ -39,6 +39,15 @@ type THTTPServer struct {
 	outputProtocol *THTTPServerProtocol
 }
 
+func NewTHTTPServer3(processor TProcessor, inputProtocol *THTTPServerProtocol, outputProtocol *THTTPServerProtocol) *THTTPServer {
+	return &THTTPServer{
+		processor:      processor,
+		inputProtocol:  inputProtocol,
+		outputProtocol: outputProtocol,
+		quit:           make(chan struct{}, 1),
+	}
+}
+
 func NewTHTTPServer4(networkAddr string, processor TProcessor, inputProtocol *THTTPServerProtocol, outputProtocol *THTTPServerProtocol) *THTTPServer {
 	return &THTTPServer{
 		networkAddr:    networkAddr,
@@ -56,6 +65,11 @@ func (p *THTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (p *THTTPServer) Serve() error {
 	http.Handle(DEFAULT_URL, p)
 	http.ListenAndServe(p.networkAddr, nil)
+	return nil
+}
+
+func (p *THTTPServer) Register() error {
+	http.Handle(DEFAULT_URL, p)
 	return nil
 }
 

@@ -25,6 +25,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 	//"encoding/binary"
 )
 
@@ -166,14 +167,8 @@ func (p *THTTPServerProtocol) WriteBinary(value []byte) error {
  */
 
 func (p *THTTPServerProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
-	method := p.r.FormValue("method")
-	seqId1 := p.r.FormValue("seq_id")
-	seqId2, _ := strconv.Atoi(seqId1)
-	seqId = int32(seqId2)
-	fmt.Printf("Got seq_id:%d\n", seqId)
-
-	p.SeqId = seqId
-	return method, CALL, seqId, nil
+	name = p.buildMethodName()
+	return name, CALL, 1, nil
 }
 
 func (p *THTTPServerProtocol) ReadMessageEnd() error {
@@ -281,4 +276,18 @@ func (p *THTTPServerProtocol) Skip(fieldType TType) (err error) {
 func (p *THTTPServerProtocol) Transport() TTransport {
 	trans, _ := NewTSocket(net.JoinHostPort("localhost", "9090"))
 	return trans
+}
+
+func (p *THTTPServerProtocol) buildMethodName() string {
+	method := p.r.Method
+	fmt.Printf("method is:%v\n", method)
+	uri := p.r.RequestURI
+	fmt.Printf("uri is:%v\n", uri)
+	part := strings.Split(uri, "?")
+	part2 := strings.Split(part[0], "/")
+	prefix := strings.Join(part2[1:], "_")
+	name := prefix + "_" + strings.ToLower(method)
+	fmt.Printf("name is:%v\n", name)
+
+	return name
 }
