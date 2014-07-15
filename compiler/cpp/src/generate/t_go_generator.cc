@@ -56,42 +56,6 @@ const string default_thrift_import = "git.apache.org/thrift.git/lib/go/thrift";
 
 static std::map<string, std::vector<string> > g_fileds_map;
 
-void add_field(string function_name, string field_name) {
-    g_fileds_map[function_name].push_back(field_name);
-}
-
-string format_fields() {
-    map<string, std::vector<string> >::iterator iter;
-    string result = "var GFieldsMap = map[string][]string{";
-    bool first = true;
-    for(iter = g_fileds_map.begin(); iter != g_fileds_map.end(); iter++) {
-        cout << iter->first << endl;
-        if (first) {
-            first = false;
-        } else {
-            result += ", ";
-        }
-        result += "\"" + iter->first + "\"" + ":[]string{";
-        std::vector<string> v = iter->second;
-        bool first = true;
-        std::vector<string>::iterator iter2;
-
-        for (iter2 = v.begin(); iter2 != v.end(); iter2++) {
-            cout << *iter2 << endl;
-            if (first) {
-               first = false;
-            } else {
-                result += ", ";
-            }
-            result += "\"" + (*iter2) + "\"";
-        }
-        result += "}";
-        
-    }
-    result += "}";
-    return result;
-}
-
 /**
  * Go code generator.
  */
@@ -237,9 +201,6 @@ public:
     void generate_go_docstring(std::ofstream& out,
                                t_doc* tdoc);
 
-    void fields_map(t_service* tservice);
-
-
     /**
      * Helper rendering functions
      */
@@ -297,8 +258,47 @@ private:
     static std::string variable_name_to_go_name(const std::string& value);
     static bool can_be_nil(t_type* value);
 
+    void add_field(string function_name, string field_name);
+    string format_fields();
+    void fields_map(t_service* tservice);
+
 };
 
+void t_go_generator::add_field(string function_name, string field_name) {
+    g_fileds_map[function_name].push_back(field_name);
+}
+
+string t_go_generator::format_fields() {
+    map<string, std::vector<string> >::iterator iter;
+    string result = "var GFieldsMap = map[string][]string{\n";
+    bool first = true;
+    for(iter = g_fileds_map.begin(); iter != g_fileds_map.end(); iter++) {
+        //cout << indent() << iter->first << endl;
+        if (first) {
+            first = false;
+        } else {
+            result += ",\n";
+        }
+        result += "\"" + iter->first + "\"" + indent() + ":[]string{";
+        std::vector<string> v = iter->second;
+        bool first = true;
+        std::vector<string>::iterator iter2;
+
+        for (iter2 = v.begin(); iter2 != v.end(); iter2++) {
+            //cout << *iter2 << endl;
+            if (first) {
+               first = false;
+            } else {
+                result += ", ";
+            }
+            result += "\"" + (*iter2) + "\"";
+        }
+        result += "}";
+        
+    }
+    result += "}";
+    return result;
+}
 
 void t_go_generator::fields_map(t_service* tservice)
 {
