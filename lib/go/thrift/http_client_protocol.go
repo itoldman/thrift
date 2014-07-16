@@ -25,7 +25,6 @@ import (
 	"io"
 	"strconv"
 	"strings"
-	//"encoding/binary"
 )
 
 type THTTPProtocol struct {
@@ -49,7 +48,6 @@ func NewTHTTPProtocolTransport(t TTransport) *THTTPProtocol {
 }
 
 func NewTHTTPProtocol(t TTransport, strictRead, strictWrite bool) *THTTPProtocol {
-	fmt.Println("New HTTP protocol")
 	p := &THTTPProtocol{origTransport: t, strictRead: strictRead, strictWrite: strictWrite}
 	if et, ok := t.(TRichTransport); ok {
 		p.trans = et
@@ -191,7 +189,6 @@ func (p *THTTPProtocol) ReadMessageBegin() (name string, typeId TMessageType, se
 	if value, ok := p.origTransport.(*THttpClient); ok {
 		seq1 := value.response.Header.Get("seq_id")
 		seq2, _ := strconv.Atoi(seq1)
-		fmt.Printf("response seq_id is:%d\n", seq2)
 		if seq2 == 0 {
 			seq2++
 		}
@@ -216,13 +213,9 @@ func (p *THTTPProtocol) ReadStructEnd() error {
 
 func (p *THTTPProtocol) ReadFieldBegin() (name string, typeId TType, fieldId int16, err error) {
 	p.count++
-	//fmt.Printf("buffer length is:%d\n", len(p.buffer))
 	if p.count > 1 {
 		return "", STOP, 0, nil
 	}
-	// if len(p.buffer) > 0 {
-	// 	return "", 0, 0, nil
-	// }
 	return "", VOID, 0, nil
 }
 
@@ -270,7 +263,6 @@ func (p *THTTPProtocol) ReadI16() (value int16, err error) {
 
 func (p *THTTPProtocol) ReadI32() (value int32, err error) {
 	len, _ := p.trans.Read(p.buffer)
-	//fmt.Printf("Http protocol ReadI32, p.buffer:%v\n", p.buffer)
 
 	s := string(p.buffer[:len])
 	fmt.Printf("Http protocol ReadI32, s:%v\n", s)
@@ -291,11 +283,7 @@ func (p *THTTPProtocol) ReadDouble() (value float64, err error) {
 }
 
 func (p *THTTPProtocol) ReadString() (value string, err error) {
-	//_, e := io.ReadFull(p.trans, p.buffer)
-
 	p.trans.Read(p.buffer)
-	fmt.Printf("Http protocol ReadString:%s\n", string(p.buffer))
-
 	return string(p.buffer), nil
 }
 

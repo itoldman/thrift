@@ -72,7 +72,7 @@ func main() {
 
 		//trans, err = thrift.NewTHttpClient(parsedUrl.String())
 
-		trans, err = thrift.NewTHttpRPCClient("http", "localhost", 9090)
+		trans, err = thrift.NewTHttpRPCClient("http", host, port)
 	} else {
 		portStr := fmt.Sprint(port)
 		if strings.Contains(host, ":") {
@@ -133,11 +133,7 @@ func main() {
 
 	switch cmd {
 	case "eve":
-		trans, err = thrift.NewTHttpRPCClient("http", "eve.pf.tap4fun.com", 10000)
-		tprotocol = thrift.NewTHTTPProtocolTransport(trans)
-		client := rest.NewRestClientProtocol(trans, tprotocol, tprotocol)
 		Result, err := client.ConfigGet("test:1.0.0")
-		//Result, err := client.Add(1, 2)
 		if err != nil {
 			fmt.Printf("Got result err:%v\n", err)
 			os.Exit(1)

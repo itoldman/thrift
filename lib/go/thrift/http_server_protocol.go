@@ -20,13 +20,11 @@
 package thrift
 
 import (
-	//"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
-	//"encoding/binary"
 )
 
 type THTTPServerProtocol struct {
@@ -48,7 +46,6 @@ func NewTHTTPServerProtocolTransport() *THTTPServerProtocol {
 }
 
 func NewTHTTPServerProtocol() *THTTPServerProtocol {
-	fmt.Println("New HTTP Server protocol")
 	p := &THTTPServerProtocol{}
 	return p
 }
@@ -70,14 +67,11 @@ func (p *THTTPServerProtocolFactory) GetProtocol(t TTransport) TProtocol {
  */
 
 func (p *THTTPServerProtocol) WriteMessageBegin(name string, typeId TMessageType, seqId int32) error {
-	fmt.Println("HTTP server protocol WriteMessageBegin")
 	p.fieldIndex = 0
-	//p.buffer = p.buffer[:0]
 	return nil
 }
 
 func (p *THTTPServerProtocol) WriteMessageEnd() error {
-	//return p.Flush()
 	return nil
 }
 
@@ -90,14 +84,10 @@ func (p *THTTPServerProtocol) WriteStructEnd() error {
 }
 
 func (p *THTTPServerProtocol) WriteFieldBegin(name string, typeId TType, id int16) error {
-	//_, err := p.trans.WriteString(name + "=")
-	//return err
 	return nil
 }
 
 func (p *THTTPServerProtocol) WriteFieldEnd() error {
-	//_, err := p.trans.WriteString("&")
-	//return err
 	return nil
 }
 
@@ -142,7 +132,6 @@ func (p *THTTPServerProtocol) WriteI16(value int16) error {
 }
 
 func (p *THTTPServerProtocol) WriteI32(value int32) error {
-	fmt.Printf("WriteI32:%d\n", value)
 	p.buffer = append(p.buffer, fmt.Sprintf("%d", value)...)
 	return nil
 }
@@ -176,13 +165,9 @@ func (p *THTTPServerProtocol) ReadMessageBegin() (name string, typeId TMessageTy
 }
 
 func (p *THTTPServerProtocol) ReadMessageBegin2(fields map[string][]string) (name string, typeId TMessageType, seqId int32, err error) {
-	fmt.Println("Well, go here!")
 	name = p.buildMethodName()
 	p.fields = fields
 	p.fname = name
-	fmt.Printf("fields map is:%v\n", fields)
-	fmt.Printf("function name is:%v\n", name)
-
 	return name, CALL, 1, nil
 }
 func (p *THTTPServerProtocol) ReadMessageEnd() error {
@@ -198,9 +183,6 @@ func (p *THTTPServerProtocol) ReadStructEnd() error {
 }
 
 func (p *THTTPServerProtocol) ReadFieldBegin() (name string, typeId TType, fieldId int16, err error) {
-	fmt.Printf("fields map is:%v\n", p.fields)
-	fmt.Printf("function name is:%v\n", p.fname)
-	fmt.Printf("field index is:%v\n", p.fieldIndex)
 	if p.fieldIndex >= len(p.fields[p.fname]) {
 		return "", STOP, 0, nil
 	}
@@ -278,7 +260,6 @@ func (p *THTTPServerProtocol) ReadBinary() ([]byte, error) {
 
 func (p *THTTPServerProtocol) Flush() (err error) {
 	p.w.Header().Set("seq_id", fmt.Sprintf("%d", p.SeqId))
-	fmt.Printf("send response:%s\n", string(p.buffer))
 	p.w.Write(p.buffer)
 	p.buffer = p.buffer[:0]
 	return nil
@@ -295,14 +276,10 @@ func (p *THTTPServerProtocol) Transport() TTransport {
 
 func (p *THTTPServerProtocol) buildMethodName() string {
 	method := p.r.Method
-	fmt.Printf("method is:%v\n", method)
 	uri := p.r.RequestURI
-	fmt.Printf("uri is:%v\n", uri)
 	part := strings.Split(uri, "?")
 	part2 := strings.Split(part[0], "/")
 	prefix := strings.Join(part2[1:], "_")
 	name := prefix + "_" + strings.ToLower(method)
-	fmt.Printf("name is:%v\n", name)
-
 	return name
 }

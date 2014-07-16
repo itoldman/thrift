@@ -21,15 +21,11 @@ package thrift
 
 import (
 	"bytes"
-	//"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	//"os"
 	"strconv"
-
-	//"strings"
 )
 
 type THttpClient struct {
@@ -175,13 +171,11 @@ func (p *THttpClient) Close() error {
 }
 
 func (p *THttpClient) Read(buf []byte) (int, error) {
-	fmt.Printf("http client read :%s\n", string(p.body.Bytes()))
 	if p.response == nil {
 		return 0, NewTTransportException(NOT_OPEN, "Response buffer is empty, no request.")
 	}
 	length := p.body.Len()
 	copy(buf, p.body.Bytes())
-	fmt.Printf("read to buf:%s\n", string(buf))
 	return length, nil
 }
 
@@ -195,7 +189,6 @@ func (p *THttpClient) ReadByte() (c byte, err error) {
 }
 
 func (p *THttpClient) Write(buf []byte) (int, error) {
-	fmt.Printf("http client Write:%v\n", buf)
 	n, err := p.requestBuffer.Write(buf)
 	return n, err
 }
@@ -209,7 +202,6 @@ func (p *THttpClient) WriteString(s string) (n int, err error) {
 }
 
 func (p *THttpClient) Flush() error {
-	fmt.Println("Http client flushing")
 	client := &http.Client{}
 	var req *http.Request
 	var err error
@@ -219,9 +211,6 @@ func (p *THttpClient) Flush() error {
 		req, err = http.NewRequest("GET", p.buildGetUrl(), nil)
 	}
 
-	//req, err := http.NewRequest("POST", "http://localhost:9090/config", strings.NewReader("client_id=gl"))
-
-	fmt.Printf("Http request is:%v\n", req)
 	if err != nil {
 		return NewTTransportExceptionFromError(err)
 	}
@@ -242,11 +231,8 @@ func (p *THttpClient) Flush() error {
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
-	fmt.Printf("Response body is:%s\n", string(body))
 
 	if err != nil {
-		fmt.Printf("Read Response body err:%v\n", err)
-
 		return err
 	}
 	p.body.Write(body)

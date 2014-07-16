@@ -20,7 +20,6 @@
 package thrift
 
 import (
-	//"fmt"
 	"log"
 	"net/http"
 	"runtime/debug"
@@ -30,7 +29,6 @@ const (
 	DEFAULT_URL = "/"
 )
 
-// Simple, non-concurrent server for testing.
 type THTTPServer struct {
 	quit           chan struct{}
 	networkAddr    string
@@ -80,7 +78,6 @@ func (p *THTTPServer) Stop() error {
 }
 
 func (p *THTTPServer) rpcHandler(w http.ResponseWriter, r *http.Request) {
-	//r.ParseForm()
 	defer func() {
 		if e := recover(); e != nil {
 			log.Printf("panic in processor: %s: %s", e, debug.Stack())
@@ -89,7 +86,6 @@ func (p *THTTPServer) rpcHandler(w http.ResponseWriter, r *http.Request) {
 
 	p.inputProtocol.r = r
 	p.outputProtocol.w = w
-	// handle reqeust
 	ok, err := p.processor.Process(p.inputProtocol, p.outputProtocol)
 	if err, ok := err.(TTransportException); ok && err.TypeId() == END_OF_FILE {
 		return
