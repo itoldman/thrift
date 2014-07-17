@@ -84,8 +84,8 @@ func (p *THTTPProtocol) WriteMessageBegin(name string, typeId TMessageType, seqI
 			return err
 		}
 		value.method = method
-		value.SetUrl(p.buildUrl(name))
-		_, err = p.trans.WriteString(fmt.Sprintf("method=%s&seq_id=%d&", name, seqId))
+		value.SetUrl(p.buildPath(name))
+		//_, err = p.trans.WriteString(fmt.Sprintf("method=%s&seq_id=%d&", name, seqId))
 		return err
 	}
 
@@ -106,7 +106,7 @@ func (p *THTTPProtocol) WriteStructEnd() error {
 }
 
 func (p *THTTPProtocol) WriteFieldBegin(name string, typeId TType, id int16) error {
-	_, err := p.trans.WriteString(fmt.Sprintf("%d=%s&%s=", id, name, name))
+	_, err := p.trans.WriteString(name + "=")
 	return err
 }
 
@@ -186,13 +186,8 @@ func (p *THTTPProtocol) ReadMessageBegin2(map[string][]string) (name string, typ
 
 func (p *THTTPProtocol) ReadMessageBegin() (name string, typeId TMessageType, seqId int32, err error) {
 
-	if value, ok := p.origTransport.(*THttpClient); ok {
-		seq1 := value.response.Header.Get("seq_id")
-		seq2, _ := strconv.Atoi(seq1)
-		if seq2 == 0 {
-			seq2++
-		}
-		return "", 1, int32(seq2), nil
+	if _, ok := p.origTransport.(*THttpClient); ok {
+		return "", 1, 1, nil
 	}
 
 	return "", 1, 0, errors.New("THTTPProtocol can only work with THttpClient transport")
@@ -263,13 +258,8 @@ func (p *THTTPProtocol) ReadI16() (value int16, err error) {
 
 func (p *THTTPProtocol) ReadI32() (value int32, err error) {
 	len, _ := p.trans.Read(p.buffer)
-
 	s := string(p.buffer[:len])
-	fmt.Printf("Http protocol ReadI32, s:%v\n", s)
-
 	i, _ := strconv.Atoi(s)
-	fmt.Printf("Http protocol ReadI32, i:%d\n", i)
-
 	return int32(i), nil
 
 }
@@ -331,7 +321,7 @@ func (p *THTTPProtocol) getMethod(s string) (string, error) {
 	return "", errors.New("Not end with get, post, del or put")
 }
 
-func (p *THTTPProtocol) buildUrl(s string) string {
+func (p *THTTPProtocol) buildPath(s string) string {
 	l := strings.Split(s, "_")
 	return "/" + strings.Join(l[:len(l)-1], "/")
 }
