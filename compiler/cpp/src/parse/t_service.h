@@ -61,6 +61,10 @@ class t_service : public t_type {
     return extends_;
   }
 
+  std::map<std::string, std::vector<std::string> >* get_fields_map() {
+    return &fields_map;
+  }
+
   virtual std::string get_fingerprint_material() const {
     // Services should never be used in fingerprints.
     throw "BUG: Can't get fingerprint material for service.";
@@ -69,6 +73,8 @@ class t_service : public t_type {
  private:
   std::vector<t_function*> functions_;
   t_service* extends_;
+  std::map<std::string, std::vector<std::string> > fields_map;
+
 };
 
 #endif

@@ -54,8 +54,6 @@ bool format_go_output(const string &file_path);
 
 const string default_thrift_import = "git.apache.org/thrift.git/lib/go/thrift";
 
-static std::map<string, std::vector<string> > g_fileds_map;
-
 /**
  * Go code generator.
  */
@@ -258,21 +256,22 @@ private:
     static std::string variable_name_to_go_name(const std::string& value);
     static bool can_be_nil(t_type* value);
 
-    void add_field(string function_name, string field_name);
-    string format_fields();
+    void add_field(std::map<std::string, std::vector<string> >* fields_map, std::string function_name, std::string field_name);
+    string format_fields(std::string service_name, std::map<std::string, std::vector<string> >* fields_map);
     void fields_map(t_service* tservice);
 
 };
 
-void t_go_generator::add_field(string function_name, string field_name) {
-    g_fileds_map[function_name].push_back(field_name);
+void t_go_generator::add_field(std::map<std::string, std::vector<string> >* fields_map, std::string function_name, std::string field_name) {
+    (*fields_map)[function_name].push_back(field_name);
 }
 
-string t_go_generator::format_fields() {
-    map<string, std::vector<string> >::iterator iter;
-    string result = "var GFieldsMap = map[string][]string{\n";
+string t_go_generator::format_fields(std::string service_name, std::map<std::string, std::vector<std::string> >* fields_map) {
+    map<std::string, std::vector<string> >::iterator iter;
+    std::string name = "G" + service_name + "FieldsMap";
+    std::string result = "var " + name + " = map[string][]string{\n";
     bool first = true;
-    for(iter = g_fileds_map.begin(); iter != g_fileds_map.end(); iter++) {
+    for(iter = (*fields_map).begin(); iter != (*fields_map).end(); iter++) {
         //cout << indent() << iter->first << endl;
         if (first) {
             first = false;
@@ -312,12 +311,12 @@ void t_go_generator::fields_map(t_service* tservice)
             const vector<t_field*>& fields = tstruct->get_members();
             vector<t_field*>::const_iterator f_iter2;
             for (f_iter2 = fields.begin(); f_iter2 != fields.end(); ++f_iter2) {
-                add_field((*f_iter)->get_name(), (*f_iter2)->get_name());
+                add_field(tservice->get_fields_map(), (*f_iter)->get_name(), (*f_iter2)->get_name());
             }
         }
     }
     f_service_ <<
-               indent() << format_fields() << endl;
+               indent() << format_fields(tservice->get_name(), tservice->get_fields_map()) << endl;
     
 }
 
@@ -2252,6 +2251,7 @@ void t_go_generator::generate_service_server(t_service* tservice)
     string extends_processor = "";
     string extends_processor_new = "";
     string serviceName(publicize(tservice->get_name()));
+    string fields_map_name = "G" + tservice->get_name() + "FieldsMap";
 
     if (tservice->get_extends() != NULL) {
         extends = type_name(tservice->get_extends());
@@ -2300,7 +2300,7 @@ void t_go_generator::generate_service_server(t_service* tservice)
                    indent() << "return " << self << endl <<
                    indent() << "}" << endl << endl <<
                    indent() << "func (p *" << serviceName << "Processor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {" << endl <<
-                   indent() << "  name, _, seqId, err := iprot.ReadMessageBegin2(GFieldsMap)" << endl <<
+                   indent() << "  name, _, seqId, err := iprot.ReadMessageBegin2("<<fields_map_name<<")" << endl <<
                    indent() << "  if err != nil { return false, err }" << endl <<
                    indent() << "  if processor, ok := p.GetProcessorFunction(name); ok {" << endl <<
                    indent() << "    return processor.Process(seqId, iprot, oprot)" << endl <<
