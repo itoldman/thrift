@@ -78,6 +78,7 @@ func (p *THTTPServer) Stop() error {
 }
 
 func (p *THTTPServer) rpcHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Get request: %v\n", r)
 	defer func() {
 		if e := recover(); e != nil {
 			log.Printf("panic in processor: %s: %s", e, debug.Stack())
